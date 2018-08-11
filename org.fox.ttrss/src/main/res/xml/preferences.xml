@@ -22,32 +22,11 @@
             android:summary="@string/ttrss_url_summary"
             android:title="@string/ttrss_url" >
         </EditTextPreference>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/ssl" >
-        <org.fox.ttrss.util.LessBrokenSwitchPreference
-            android:defaultValue="false"
-            android:key="ssl_trust_any"
-            android:summary="@string/ssl_trust_any_long"
-            android:title="@string/ssl_trust_any" />
-        <org.fox.ttrss.util.LessBrokenSwitchPreference
-            android:defaultValue="false"
-            android:key="ssl_trust_any_host"
-            android:summary="@string/ssl_trust_any_host_long"
-            android:title="@string/ssl_trust_any_host" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/http_authentication" >
-        <EditTextPreference
-            android:key="http_login"
-            android:singleLine="true"
-            android:summary="@string/http_login_summary"
-            android:title="@string/login" >
-        </EditTextPreference>
-        <EditTextPreference
-            android:key="http_password"
-            android:password="true"
-            android:singleLine="true"
-            android:title="@string/password" >
-        </EditTextPreference>
+
+        <Preference
+            android:key="network_settings"
+            android:title="@string/prefs_network_settings" />
+
     </PreferenceCategory>
     <PreferenceCategory
         android:key="category_look_and_feel"
@@ -213,6 +192,10 @@
             android:summary="@string/prefs_widget_show_fresh_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/debugging" >
+
+        <Preference
+            android:key="show_logcat"
+            android:title="@string/logcat_title" />
 
         <org.fox.ttrss.util.LessBrokenSwitchPreference
             android:defaultValue="true"
