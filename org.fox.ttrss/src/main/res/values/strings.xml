@@ -134,8 +134,7 @@
     <string name="trial_purchase">Unlock full version</string>
     <string name="trial_expired">Trial expired</string>
     <string name="trial_expired_message">To continue using Tiny Tiny RSS please unlock the full version by purchasing the key.</string>
-    <!-- <string name="theme_sepia">Sepia</string>
-    <string name="theme_amber">Amber</string> -->
+    <string name="theme_amber">Amber</string>
     <string name="reading">Reading</string>
     <string name="offline_articles_to_download">Amount of articles to download</string>
     <string name="offline_articles_to_download_long">How many articles to download for offline mode (newest first)</string>
@@ -176,7 +175,7 @@
     </plurals>
 
     <string name="prefs_confirm_headlines_catchup">Confirm mark as read</string>
-    <string name="author_formatted">by %1$s</string>
+    <string name="author_formatted">%1$s</string>
 
     <plurals name="n_unread_articles">
         <item quantity="zero">No unread articles</item>
@@ -206,6 +205,11 @@
     <string name="headlines_sort_title">Title</string>
     <string name="headlines_sort_articles_title">Sort articles</string>
     <string name="fresh_articles">Fresh articles</string>
+    <string name="cat_special">Special</string>
+    <string name="feed_starred_articles">Starred articles</string>
+    <string name="feed_published_articles">Published articles</string>
+    <string name="feed_archived_articles">Archived articles</string>
+    <string name="feed_recently_read">Recently read</string>
     <string name="feed_all_articles">All articles</string>
     <string name="prefs_enable_fab">Enable FAB</string>
     <string name="prefs_enable_fab_long">Show floating action button when reading</string>
@@ -263,4 +267,6 @@
     <string name="logcat_refresh">Refresh</string>
     <string name="logcat_copy">Copy to clipboard</string>
     <string name="logcat_title">Log viewer</string>
+    <string name="cat_labels">Labels</string>
+    <string name="cat_uncategorized">Uncategorized</string>
 </resources>

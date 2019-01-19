@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
@@ -115,6 +116,31 @@ public class FeedsFragment extends BaseFeedlistFragment implements OnItemClickLi
 								m_feeds.add(f);
 								catUnread += f.unread;
 							}
+
+							// localize special feed names
+							// TODO: join with shortcut title lookup by id?
+							if (m_activeCategory != null && m_activeCategory.id == -1) {
+								switch (f.id) {
+									case -1:
+										f.title = getString(R.string.feed_starred_articles);
+										break;
+									case -2:
+										f.title = getString(R.string.feed_published_articles);
+										break;
+									case -3:
+										f.title = getString(R.string.fresh_articles);
+										break;
+									case -4:
+										f.title = getString(R.string.feed_all_articles);
+										break;
+									case -6:
+										f.title = getString(R.string.feed_recently_read);
+										break;
+									case 0:
+										f.title = getString(R.string.feed_archived_articles);
+										break;
+								}
+							}
 						}
 
 					sortFeeds();
@@ -206,8 +232,8 @@ public class FeedsFragment extends BaseFeedlistFragment implements OnItemClickLi
 
 		@Override
 		public int compare(Feed a, Feed b) {
-			Log.d(TAG, "A:" + a.title + " " + a.is_cat + " " + a.order_id);
-			Log.d(TAG, "B:" + b.title + " " + b.is_cat + " " + b.order_id);
+			//Log.d(TAG, "A:" + a.title + " " + a.is_cat + " " + a.order_id);
+			//Log.d(TAG, "B:" + b.title + " " + b.is_cat + " " + b.order_id);
 
 			if (a.id >= 0 && b.id >= 0)
 				if (a.is_cat && b.is_cat)
@@ -347,6 +373,10 @@ public class FeedsFragment extends BaseFeedlistFragment implements OnItemClickLi
 		if (feed.id <= 0) {
 			menu.findItem(R.id.unsubscribe_feed).setVisible(false);
 		}
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            menu.findItem(R.id.create_shortcut).setVisible(false);
+        }
 
 		super.onCreateContextMenu(menu, v, menuInfo);		
 		
@@ -520,13 +550,16 @@ public class FeedsFragment extends BaseFeedlistFragment implements OnItemClickLi
 					m_activity.getTheme().resolveAttribute(R.attr.ic_star, tv, true);
 					icon.setImageResource(tv.resourceId);
 				} else if (feed.id == -2 && !feed.is_cat) {
-					m_activity.getTheme().resolveAttribute(R.attr.ic_checkbox_marked, tv, true);
+					m_activity.getTheme().resolveAttribute(R.attr.ic_rss_box, tv, true);
 					icon.setImageResource(tv.resourceId);
 				} else if (feed.id == -3 && !feed.is_cat) {
-					m_activity.getTheme().resolveAttribute(R.attr.ic_coffee, tv, true);
+					m_activity.getTheme().resolveAttribute(R.attr.ic_fresh, tv, true);
 					icon.setImageResource(tv.resourceId);
 				} else if (feed.id == -4 && !feed.is_cat) {
-					m_activity.getTheme().resolveAttribute(R.attr.ic_folder_outline, tv, true);
+					m_activity.getTheme().resolveAttribute(R.attr.ic_inbox, tv, true);
+					icon.setImageResource(tv.resourceId);
+				} else if (feed.id == -6 && !feed.is_cat) {
+					m_activity.getTheme().resolveAttribute(R.attr.ic_restore, tv, true);
 					icon.setImageResource(tv.resourceId);
 				} else if (feed.is_cat) {
 					m_activity.getTheme().resolveAttribute(R.attr.ic_folder_outline, tv, true);

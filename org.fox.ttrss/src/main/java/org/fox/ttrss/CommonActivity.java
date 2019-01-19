@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -67,7 +68,7 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 	public final static String THEME_DARK = "THEME_DARK";
 	public final static String THEME_LIGHT = "THEME_LIGHT";
 	//public final static String THEME_SEPIA = "THEME_SEPIA";
-    //public final static String THEME_AMBER = "THEME_AMBER";
+    public final static String THEME_AMBER = "THEME_AMBER";
 	public final static String THEME_DEFAULT = CommonActivity.THEME_LIGHT;
 
 	public final static String NOTIFICATION_CHANNEL_NORMAL = "channel_normal";
@@ -315,7 +316,9 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 		String theme = prefs.getString("theme", CommonActivity.THEME_DEFAULT);
 		
 		if (theme.equals(THEME_DARK)) {
-            setTheme(R.style.DarkTheme);
+			setTheme(R.style.DarkTheme);
+		} else if (theme.equals(THEME_AMBER)) {
+			setTheme(R.style.AmberTheme);
 		} else {
 			setTheme(R.style.LightTheme);
 		}
@@ -387,6 +390,7 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 			builder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
 
 			builder.setToolbarColor(tvBackground.data);
+			builder.setShowTitle(true);
 
 			Intent shareIntent = getShareIntent(uri.toString(), null);
 
@@ -576,5 +580,13 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 	public static void requestWidgetUpdate(Context context) {
 		JobIntentService.enqueueWork(context.getApplicationContext(), WidgetUpdateService.class, 0, new Intent());
 	}
+
+    public int getScreenWidth() {
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+
+		return size.x;
+    }
 }
 
