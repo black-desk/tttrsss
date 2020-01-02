@@ -32,7 +32,7 @@
         android:key="category_look_and_feel"
         android:title="@string/look_and_feel" >
         <ListPreference
-            android:defaultValue="THEME_LIGHT"
+            android:defaultValue="THEME_FOLLOW_DEVICE"
             android:entries="@array/pref_theme_names"
             android:entryValues="@array/pref_theme_values"
             android:key="theme"
@@ -50,6 +50,7 @@
             android:defaultValue="false"
             android:key="enable_cats"
             android:title="@string/enable_cats" />
+
         <org.fox.ttrss.util.LessBrokenSwitchPreference
             android:defaultValue="false"
             android:dependency="enable_cats"
@@ -59,29 +60,13 @@
 
         <org.fox.ttrss.util.LessBrokenSwitchPreference
             android:defaultValue="true"
-            android:key="headlines_show_content"
-            android:summary="@string/pref_headlines_show_content_long"
-            android:title="@string/pref_headlines_show_content" />
+            android:key="open_fresh_on_startup"
+            android:title="@string/prefs_open_fresh_on_startup" />
+    </PreferenceCategory>
 
-        <org.fox.ttrss.util.LessBrokenSwitchPreference
-            android:defaultValue="true"
-            android:dependency="headlines_mark_read_scroll"
-            android:key="headlines_swipe_to_dismiss"
-            android:summary="@string/pref_headlines_swipe_to_dismiss_long"
-            android:title="@string/pref_headlines_swipe_to_dismiss" />
-
-        <org.fox.ttrss.util.LessBrokenSwitchPreference
-            android:defaultValue="false"
-            android:disableDependentsState="true"
-            android:key="headlines_mark_read_scroll"
-            android:summary="@string/pref_headlines_mark_read_scroll_long"
-            android:title="@string/pref_headlines_mark_read_scroll" />
-
-        <!-- <org.fox.ttrss.util.LessBrokenSwitchPreference
-            android:defaultValue="false"
-            android:key="enable_condensed_fonts"
-            android:summary="@string/pref_headlines_use_condensed_fonts_long"
-            android:title="@string/pref_headlines_use_condensed_fonts" /> -->
+    <PreferenceCategory
+        android:key="category_headlines"
+        android:title="@string/headlines" >
 
         <org.fox.ttrss.util.FontSizeDialogPreference
             android:defaultValue="13"
@@ -98,17 +83,58 @@
             android:title="@string/prefs_headline_display_mode" />
 
         <org.fox.ttrss.util.LessBrokenSwitchPreference
+            android:defaultValue="false"
+            android:key="headline_images_wifi_only"
+            android:summary="@string/prefs_headline_images_wifi_only_long"
+            android:title="@string/prefs_headline_images_wifi_only" />
+
+        <org.fox.ttrss.util.LessBrokenSwitchPreference
             android:defaultValue="true"
-            android:key="open_fresh_on_startup"
-            android:title="@string/prefs_open_fresh_on_startup" />
+            android:key="headlines_show_content"
+            android:title="@string/pref_headlines_show_content" />
 
         <org.fox.ttrss.util.LessBrokenSwitchPreference
             android:defaultValue="false"
-            android:key="inline_video_player"
-            android:summary="Experimental: play videos inside headlines list. Long tap to open separate player"
-            android:title="Inline video player" />
+            android:disableDependentsState="true"
+            android:key="headlines_mark_read_scroll"
+            android:title="@string/pref_headlines_mark_read_scroll" />
+
+        <org.fox.ttrss.util.LessBrokenSwitchPreference
+            android:defaultValue="true"
+            android:dependency="headlines_mark_read_scroll"
+            android:key="headlines_swipe_to_dismiss"
+            android:summary="@string/pref_headlines_swipe_to_dismiss_long"
+            android:title="@string/pref_headlines_swipe_to_dismiss" />
+
+        <!-- <org.fox.ttrss.util.LessBrokenSwitchPreference
+            android:defaultValue="false"
+            android:key="enable_condensed_fonts"
+            android:summary="@string/pref_headlines_use_condensed_fonts_long"
+            android:title="@string/pref_headlines_use_condensed_fonts" /> -->
+
+        <ListPreference
+            android:defaultValue="15"
+            android:entries="@array/pref_headlines_request_values"
+            android:entryValues="@array/pref_headlines_request_values"
+            android:key="headlines_request_size"
+            android:summary="@string/prefs_headline_request_size_long"
+            android:title="@string/prefs_headline_request_size" />
+
+        <org.fox.ttrss.util.LessBrokenSwitchPreference
+            android:defaultValue="false"
+            android:key="enable_image_downsampling"
+            android:title="@string/prefs_enable_image_downsampling"
+            android:summary="@string/prefs_enable_image_downsampling_long" />
+
+        <org.fox.ttrss.util.LessBrokenSwitchPreference
+            android:defaultValue="false"
+            android:key="always_downsample_images"
+            android:dependency="enable_image_downsampling"
+            android:title="@string/prefs_always_downsample_images"
+            android:summary="@string/prefs_always_downsample_images_long" />
 
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/reading" >
         <org.fox.ttrss.util.FontSizeDialogPreference
             android:defaultValue="16"
@@ -148,6 +174,11 @@
             android:defaultValue="true"
             android:key="custom_tabs_ask_always"
             android:title="@string/ask_me_every_time" />
+        <org.fox.ttrss.util.LessBrokenSwitchPreference
+            android:defaultValue="false"
+            android:key="always_open_uri"
+            android:summary="@string/prefs_always_open_uri_summary"
+            android:title="@string/prefs_always_open_uri" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/offline_mode" >
         <ListPreference

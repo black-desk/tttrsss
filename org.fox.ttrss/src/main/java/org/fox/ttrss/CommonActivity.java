@@ -15,9 +15,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,14 +25,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.customtabs.CustomTabsCallback;
-import android.support.customtabs.CustomTabsClient;
-import android.support.customtabs.CustomTabsIntent;
-import android.support.customtabs.CustomTabsServiceConnection;
-import android.support.customtabs.CustomTabsSession;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.JobIntentService;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -41,6 +33,7 @@ import android.view.View;
 import android.widget.CheckBox;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.snackbar.Snackbar;
 import com.livefront.bridge.Bridge;
 
 import org.fox.ttrss.util.DatabaseHelper;
@@ -54,6 +47,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsServiceConnection;
+import androidx.browser.customtabs.CustomTabsSession;
+import androidx.core.app.JobIntentService;
 import icepick.State;
 
 public class CommonActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -65,17 +66,14 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 	public final static String FRAG_CATS = "cats";
 	public final static String FRAG_DIALOG = "dialog";
 
-	public final static String THEME_DARK = "THEME_DARK";
-	public final static String THEME_LIGHT = "THEME_LIGHT";
-	//public final static String THEME_SEPIA = "THEME_SEPIA";
-    public final static String THEME_AMBER = "THEME_AMBER";
-	public final static String THEME_DEFAULT = CommonActivity.THEME_LIGHT;
+	public final static String THEME_DEFAULT = "THEME_FOLLOW_DEVICE";
 
 	public final static String NOTIFICATION_CHANNEL_NORMAL = "channel_normal";
 	public final static String NOTIFICATION_CHANNEL_PRIORITY = "channel_priority";
 
 	public static final int EXCERPT_MAX_LENGTH = 256;
     public static final int EXCERPT_MAX_QUERY_LENGTH = 2048;
+	public static final int LABEL_BASE_INDEX = -1024;
 
 	public static final int PENDING_INTENT_CHROME_SHARE = 1;
 
@@ -312,24 +310,42 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 				.show();
 	}
 
+	public boolean isUiNightMode() {
+		try {
+			int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+			return Configuration.UI_MODE_NIGHT_YES == nightModeFlags;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	protected void setAppTheme(SharedPreferences prefs) {
 		String theme = prefs.getString("theme", CommonActivity.THEME_DEFAULT);
-		
-		if (theme.equals(THEME_DARK)) {
-			setTheme(R.style.DarkTheme);
-		} else if (theme.equals(THEME_AMBER)) {
-			setTheme(R.style.AmberTheme);
+
+		Log.d(TAG, "setting theme to: " + theme);
+
+		if ("THEME_DARK".equals(theme)) {
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+		} else if ("THEME_LIGHT".equals(theme)) {
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 		} else {
-			setTheme(R.style.LightTheme);
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 		}
+
+		setTheme(R.style.AppTheme);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		Log.d(TAG, "onSharedPreferenceChanged:" + key);
 
-		String[] filter = new String[] { "theme", "enable_cats", "headline_mode", "widget_update_interval",
-				"headlines_swipe_to_dismiss", "headlines_mark_read_scroll" };
+		if ("theme".equals(key)) {
+			setAppTheme(sharedPreferences);
+		}
+
+		String[] filter = new String[] { "enable_cats", "headline_mode", "widget_update_interval",
+				"headlines_swipe_to_dismiss", "headlines_mark_read_scroll", "headlines_request_size" };
 
 		m_needRestart = Arrays.asList(filter).indexOf(key) != -1;
 	}
@@ -581,12 +597,5 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 		JobIntentService.enqueueWork(context.getApplicationContext(), WidgetUpdateService.class, 0, new Intent());
 	}
 
-    public int getScreenWidth() {
-		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-
-		return size.x;
-    }
 }
 

@@ -10,8 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -33,7 +31,6 @@ import android.widget.TextView;
 
 import com.shamanland.fab.ShowHideOnScroll;
 
-import org.fox.ttrss.CommonActivity;
 import org.fox.ttrss.R;
 import org.fox.ttrss.util.ImageCacheService;
 import org.fox.ttrss.util.NotifyingScrollView;
@@ -48,6 +45,9 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
 
 public class OfflineArticleFragment extends Fragment {
 	private final String TAG = this.getClass().getSimpleName();
@@ -321,8 +321,7 @@ public class OfflineArticleFragment extends Fragment {
 			
 			if (m_web != null) {
 
-				String theme = m_prefs.getString("theme", CommonActivity.THEME_DEFAULT);
-				if (CommonActivity.THEME_DARK.equals(theme) || CommonActivity.THEME_AMBER.equals(theme)) {
+				if (m_activity.isUiNightMode()) {
 					m_web.setBackgroundColor(Color.BLACK);
 				}
 

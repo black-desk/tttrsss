@@ -12,9 +12,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -48,6 +45,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import icepick.State;
 
 public class FeedsFragment extends BaseFeedlistFragment implements OnItemClickListener, OnSharedPreferenceChangeListener,
@@ -241,16 +241,19 @@ public class FeedsFragment extends BaseFeedlistFragment implements OnItemClickLi
 						return a.order_id - b.order_id;
 					else
 						return a.title.toUpperCase().compareTo(b.title.toUpperCase());
-				else if (a.is_cat && !b.is_cat)
+				else if (a.is_cat)
 					return -1;
-				else if (!a.is_cat && b.is_cat) 
+				else if (b.is_cat)
 					return 1;
 				else if (a.order_id != 0 && b.order_id != 0)
 					return a.order_id - b.order_id;
 				else
 					return a.title.toUpperCase().compareTo(b.title.toUpperCase());
 			else
-				return a.id - b.id;
+				if (a.id < CommonActivity.LABEL_BASE_INDEX && b.id < CommonActivity.LABEL_BASE_INDEX)
+					return a.title.toUpperCase().compareTo(b.title.toUpperCase());
+				else
+					return a.id - b.id;
 		}
 		
 	}

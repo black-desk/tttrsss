@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.fox.ttrss"
-    android:versionCode="493"
-    android:versionName="1.259">
+    android:versionCode="511"
+    android:versionName="1.277">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,6 +10,7 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".Application"
@@ -216,7 +217,7 @@
 
         <receiver android:name=".util.DeviceBootReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -234,34 +235,12 @@
         <service
             android:name=".widget.WidgetUpdateService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".DashClock"
-            android:icon="@drawable/dashclock"
-            android:label="@string/app_name"
-            android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA" >
-            <intent-filter>
-                <action android:name="com.google.android.apps.dashclock.Extension" />
-            </intent-filter>
-
-            <meta-data
-                android:name="protocolVersion"
-                android:value="1" />
-            <meta-data
-                android:name="description"
-                android:value="@string/app_name" />
-        </service>
 
         <activity
             android:name=".GalleryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Article Images" >
         </activity>
-        <activity
-            android:name="org.acra.CrashReportDialog"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:theme="@style/DarkDialogTheme" />
     </application>
 
 </manifest>
