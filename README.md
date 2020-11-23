@@ -30,10 +30,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Copyright (c) 2011 Andrew Dolgov (unless explicitly stated otherwise).
-<<<<<<< HEAD
 
 ## See also
 
 * Forum: http://tt-rss.org/forum
-=======
->>>>>>> bb7d4a624b19cee2d6ed1b736ecdb3ee07c52b9d
