@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,7 +33,20 @@ import android.view.Display;
 import android.view.View;
 import android.widget.CheckBox;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsServiceConnection;
+import androidx.browser.customtabs.CustomTabsSession;
+import androidx.core.app.JobIntentService;
+import androidx.core.content.FileProvider;
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.material.snackbar.Snackbar;
 import com.livefront.bridge.Bridge;
 
@@ -43,18 +57,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsClient;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsServiceConnection;
-import androidx.browser.customtabs.CustomTabsSession;
-import androidx.core.app.JobIntentService;
 import icepick.State;
 
 public class CommonActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -345,7 +353,8 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 		}
 
 		String[] filter = new String[] { "enable_cats", "headline_mode", "widget_update_interval",
-				"headlines_swipe_to_dismiss", "headlines_mark_read_scroll", "headlines_request_size" };
+				"headlines_swipe_to_dismiss", "headlines_mark_read_scroll", "headlines_request_size",
+				"force_phone_layout" };
 
 		m_needRestart = Arrays.asList(filter).indexOf(key) != -1;
 	}
@@ -393,6 +402,52 @@ public class CommonActivity extends AppCompatActivity implements SharedPreferenc
 
 	protected void shareText(String text, String subject) {
 		startActivity(Intent.createChooser(getShareIntent(text, subject), text));
+	}
+
+	protected void shareImageFromUri(String url) {
+		Glide.with(this)
+				.load(url)
+				.asBitmap()
+				.skipMemoryCache(false)
+				.diskCacheStrategy(DiskCacheStrategy.ALL)
+				.into(new SimpleTarget<Bitmap>() {
+					@Override
+					public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+						Log.d(TAG, "image resource ready: " + resource);
+
+						if (resource != null) {
+							File shareFolder = new File(getCacheDir(), "shared");
+
+							try {
+								shareFolder.mkdirs();
+
+								File file = new File(shareFolder, "shared.png");
+
+								FileOutputStream stream = new FileOutputStream(file);
+								resource.compress(Bitmap.CompressFormat.PNG, 90, stream);
+								stream.flush();
+								stream.close();
+
+								Uri shareUri = FileProvider.getUriForFile(CommonActivity.this,
+										"org.fox.ttrss.SharedFileProvider", file);
+
+								Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+								intent.putExtra(Intent.EXTRA_STREAM, shareUri);
+								intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+								intent.setType("image/png");
+
+								startActivity(intent);
+
+							} catch (Exception e) {
+								e.printStackTrace();
+								toast(e.getMessage());
+							}
+
+						} else {
+							toast(getString(R.string.img_share_failed_to_load));
+						}
+					}
+				});
 	}
 
 	private void openUriWithCustomTab(Uri uri) {

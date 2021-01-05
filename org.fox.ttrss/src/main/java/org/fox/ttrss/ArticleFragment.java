@@ -25,14 +25,10 @@ import android.webkit.WebView.HitTestResult;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.shamanland.fab.ShowHideOnScroll;
 
 import org.fox.ttrss.types.Article;
 import org.fox.ttrss.types.Attachment;
-import org.fox.ttrss.util.NotifyingScrollView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,7 +36,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import androidx.appcompat.app.ActionBar;
 import icepick.State;
 
 public class ArticleFragment extends StateSavedFragment  {
@@ -54,10 +49,9 @@ public class ArticleFragment extends StateSavedFragment  {
     protected FrameLayout m_customViewContainer;
     protected View m_contentView;
     protected FSVideoChromeClient m_chromeClient;
-    protected View m_fab;
+    //protected View m_fab;
     protected int m_articleFontSize;
     protected int m_articleSmallFontSize;
-    protected boolean m_acceleratedWebview = true;
 
     public void initialize(Article article) {
 		m_article = article;
@@ -88,7 +82,7 @@ public class ArticleFragment extends StateSavedFragment  {
             m_customViewContainer.setVisibility(View.VISIBLE);
             m_customViewContainer.addView(view);
 
-            if (m_fab != null) m_fab.setVisibility(View.GONE);
+            //if (m_fab != null) m_fab.setVisibility(View.GONE);
 
             m_activity.showSidebar(false);
 
@@ -114,8 +108,8 @@ public class ArticleFragment extends StateSavedFragment  {
             m_customViewContainer.removeView(m_customView);
             m_callback.onCustomViewHidden();
 
-            if (m_fab != null && m_prefs.getBoolean("enable_article_fab", true))
-                m_fab.setVisibility(View.VISIBLE);
+            /*if (m_fab != null && m_prefs.getBoolean("enable_article_fab", true))
+                m_fab.setVisibility(View.VISIBLE);*/
 
             m_customView = null;
 
@@ -136,7 +130,7 @@ public class ArticleFragment extends StateSavedFragment  {
 
 				menu.setHeaderTitle(result.getExtra());
 				getActivity().getMenuInflater().inflate(R.menu.content_gallery_entry, menu);
-				
+
 				/* FIXME I have no idea how to do this correctly ;( */
 				
 				m_activity.setLastContentImageHitTestUrl(result.getExtra());
@@ -183,47 +177,6 @@ public class ArticleFragment extends StateSavedFragment  {
 
             return view;
         } */
-
-        NotifyingScrollView scrollView = view.findViewById(R.id.article_scrollview);
-        m_fab = view.findViewById(R.id.article_fab);
-
-        if (scrollView != null && m_activity.isSmallScreen()) {
-            view.findViewById(R.id.article_heading_spacer).setVisibility(View.VISIBLE);
-
-            scrollView.setOnScrollChangedListener(new NotifyingScrollView.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-                    ActionBar ab = m_activity.getSupportActionBar();
-
-                    if (t >= oldt && t >= ab.getHeight()) {
-                        ab.hide();
-                    } else if (t <= ab.getHeight() || oldt - t >= 10) {
-                        ab.show();
-                    }
-
-                }
-            });
-        }
-
-        if (scrollView != null && m_fab != null) {
-            if (m_prefs.getBoolean("enable_article_fab", true)) {
-                scrollView.setOnTouchListener(new ShowHideOnScroll(m_fab));
-
-                m_fab.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        try {
-                            m_activity.openUri(Uri.parse(m_article.link));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            m_activity.toast(R.string.error_other_error);
-                        }
-                    }
-                });
-            } else {
-                m_fab.setVisibility(View.GONE);
-            }
-        }
 
         m_articleFontSize = Integer.parseInt(m_prefs.getString("article_font_size_sp", "16"));
         m_articleSmallFontSize = Math.max(10, Math.min(18, m_articleFontSize - 2));
@@ -400,24 +353,7 @@ public class ArticleFragment extends StateSavedFragment  {
             }
         });
 
-        // prevent flicker in ics
-        if (!m_prefs.getBoolean("webview_hardware_accel", true)) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                m_web.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                m_acceleratedWebview = false;
-            }
-        }
-
         m_web.setVisibility(View.VISIBLE);
-
-        // we no longer use async rendering because chrome 66 webview breaks on it sometimes
-
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                renderContent(savedInstanceState);
-            }
-        }, 250);*/
 
         renderContent(savedInstanceState);
 
@@ -466,7 +402,7 @@ public class ArticleFragment extends StateSavedFragment  {
                 ws.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
             }
 
-            ws.setMediaPlaybackRequiresUserGesture(false);
+            ws.setMediaPlaybackRequiresUserGesture(true);
         }
 
         if (m_activity.isUiNightMode()) {
@@ -531,7 +467,7 @@ public class ArticleFragment extends StateSavedFragment  {
                 //
             }
 
-            if (savedInstanceState == null || !m_acceleratedWebview) {
+            if (savedInstanceState == null) {
                 m_web.loadDataWithBaseURL(baseUrl, content.toString(), "text/html", "utf-8", null);
             } else {
                 WebBackForwardList rc = m_web.restoreState(savedInstanceState);

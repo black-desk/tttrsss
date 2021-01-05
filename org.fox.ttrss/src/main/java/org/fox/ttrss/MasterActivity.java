@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.JsonElement;
 
 import org.fox.ttrss.types.Article;
@@ -58,7 +59,11 @@ public class MasterActivity extends OnlineActivity implements HeadlinesEventList
 
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_master);
+		if (m_prefs.getBoolean("force_phone_layout", false)) {
+			setContentView(R.layout.activity_master_phone);
+		} else {
+			setContentView(R.layout.activity_master);
+		}
 
 		setSmallScreen(findViewById(R.id.sw600dp_anchor) == null);
 
@@ -200,6 +205,23 @@ public class MasterActivity extends OnlineActivity implements HeadlinesEventList
 			if (m_drawerLayout != null && !m_feedIsSelected) {
 				m_drawerLayout.openDrawer(Gravity.START);
 			}
+		}
+
+		FloatingActionButton fab = findViewById(R.id.master_fab);
+
+        if (fab != null) {
+        	fab.show();
+
+        	fab.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					HeadlinesFragment hf = (HeadlinesFragment) getSupportFragmentManager().findFragmentByTag(FRAG_HEADLINES);
+
+					if (hf != null && hf.isAdded()) {
+						hf.refresh(false);
+					}
+				}
+			});
 		}
 	}
 
@@ -529,8 +551,8 @@ public class MasterActivity extends OnlineActivity implements HeadlinesEventList
 		onArticleSelected(article, true);		
 	}
 
-	public void catchupFeed(final Feed feed) {
-		super.catchupFeed(feed);
+	public void catchupFeed(final Feed feed, final String mode) {
+		super.catchupFeed(feed, mode);
 		refresh();
 	}
 

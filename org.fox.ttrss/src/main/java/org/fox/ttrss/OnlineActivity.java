@@ -28,7 +28,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -49,9 +53,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.Toolbar;
-
 public class OnlineActivity extends CommonActivity {
 	private final String TAG = this.getClass().getSimpleName();
 
@@ -67,6 +68,81 @@ public class OnlineActivity extends CommonActivity {
 
 	private String m_lastImageHitTestUrl;
 	private ConnectivityManager m_cmgr;
+
+	public void catchupDialog(final Feed feed) {
+
+		if (getApiLevel() >= 15) {
+
+			int selectedIndex = 0;
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.catchup_dialog_title, feed.title))
+					.setSingleChoiceItems(
+							new String[] {
+									getString(R.string.catchup_dialog_all_articles),
+									getString(R.string.catchup_dialog_1day),
+									getString(R.string.catchup_dialog_1week),
+									getString(R.string.catchup_dialog_2week)
+							},
+							selectedIndex, new OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+													int which) {
+								}
+							})
+					.setPositiveButton(R.string.catchup,
+							new OnClickListener() {
+								public void onClick(DialogInterface dialog,
+													int which) {
+
+									ListView list = ((AlertDialog)dialog).getListView();
+
+									if (list.getCheckedItemCount() > 0) {
+										int position = list.getCheckedItemPosition();
+
+										String[] catchupModes = { "all", "1day", "1week", "2week" };
+										String mode = catchupModes[position];
+
+										catchupFeed(feed, mode);
+									}
+								}
+							})
+					.setNegativeButton(R.string.dialog_cancel,
+							new Dialog.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+													int which) {
+
+								}
+							});
+
+			Dialog dialog = builder.create();
+			dialog.show();
+
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					this)
+					.setMessage(getString(R.string.catchup_dialog_title, feed.title))
+					.setPositiveButton(R.string.catchup,
+							new Dialog.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+													int which) {
+
+									catchupFeed(feed, "all");
+
+								}
+							})
+					.setNegativeButton(R.string.dialog_cancel,
+							new Dialog.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+													int which) {
+
+								}
+							});
+
+			AlertDialog dialog = builder.create();
+			dialog.show();
+		}
+	}
 
 	//protected PullToRefreshAttacher m_pullToRefreshAttacher;
 
@@ -450,6 +526,11 @@ public class OnlineActivity extends CommonActivity {
 			return true;
 		case R.id.article_img_share:
 			if (getLastContentImageHitTestUrl() != null) {
+				shareImageFromUri(getLastContentImageHitTestUrl());
+			}
+			return true;
+		case R.id.article_img_share_url:
+			if (getLastContentImageHitTestUrl() != null) {
 				shareText(getLastContentImageHitTestUrl());
 			}
 			return true;
@@ -607,38 +688,11 @@ public class OnlineActivity extends CommonActivity {
 			return true;
 		case R.id.headlines_mark_as_read:
 			if (hf != null) {
-				
-				int count = hf.getUnreadArticles().size();
-				
-				boolean confirm = m_prefs.getBoolean("confirm_headlines_catchup", true);
-				
-				if (count > 0) {
-					if (confirm) {
-						AlertDialog.Builder builder = new AlertDialog.Builder(
-								OnlineActivity.this)
-								.setMessage(getResources().getQuantityString(R.plurals.mark_num_headlines_as_read, count, count))
-								.setPositiveButton(R.string.catchup,
-										new Dialog.OnClickListener() {
-											public void onClick(DialogInterface dialog,
-													int which) {
-	
-												catchupVisibleArticles();											
-												
-											}
-										})
-								.setNegativeButton(R.string.dialog_cancel,
-										new Dialog.OnClickListener() {
-											public void onClick(DialogInterface dialog,
-													int which) {
-		
-											}
-										});
-		
-						AlertDialog dlg = builder.create();
-						dlg.show();
-					} else {
-						catchupVisibleArticles();
-					}
+
+				Feed feed = hf.getFeed();
+
+				if (feed != null) {
+					catchupDialog(hf.getFeed());
 				}
 			}
 			return true;
@@ -821,33 +875,28 @@ public class OnlineActivity extends CommonActivity {
 		case R.id.catchup_above:
 			if (hf != null) {
 
-				if (m_prefs.getBoolean("confirm_headlines_catchup", true)) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						OnlineActivity.this)
+						.setMessage(R.string.confirm_catchup_above)
+						.setPositiveButton(R.string.dialog_ok,
+								new Dialog.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int which) {
 
-					AlertDialog.Builder builder = new AlertDialog.Builder(
-							OnlineActivity.this)
-							.setMessage(R.string.confirm_catchup_above)
-							.setPositiveButton(R.string.dialog_ok,
-									new Dialog.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-															int which) {
+										catchupAbove(hf, ap);
 
-											catchupAbove(hf, ap);
+									}
+								})
+						.setNegativeButton(R.string.dialog_cancel,
+								new Dialog.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int which) {
 
-										}
-									})
-							.setNegativeButton(R.string.dialog_cancel,
-									new Dialog.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-															int which) {
+									}
+								});
 
-										}
-									});
-
-					AlertDialog dlg = builder.create();
-					dlg.show();
-				} else {
-					catchupAbove(hf, ap);
-				}
+				AlertDialog dialog = builder.create();
+				dialog.show();
 
 			}
 			return true;
@@ -896,7 +945,7 @@ public class OnlineActivity extends CommonActivity {
         }
 	}
 
-	protected void catchupVisibleArticles() {
+	/* protected void catchupVisibleArticles() {
 		final HeadlinesFragment hf = (HeadlinesFragment) getSupportFragmentManager().findFragmentByTag(FRAG_HEADLINES);
 		
 		if (hf != null) {
@@ -927,7 +976,7 @@ public class OnlineActivity extends CommonActivity {
 			};
 			req.execute(map);
 		}
-	}
+	} */
 
 	public void editArticleNote(final Article article) {
 		String note = "";
@@ -1274,8 +1323,8 @@ public class OnlineActivity extends CommonActivity {
 		return super.onKeyUp(keyCode, event);		
 	}
 	
-	public void catchupFeed(final Feed feed) {
-		Log.d(TAG, "catchupFeed=" + feed);
+	public void catchupFeed(final Feed feed, final String mode) {
+		Log.d(TAG, "catchupFeed=" + feed + "; mode=" + mode);
 
 		ApiRequest req = new ApiRequest(getApplicationContext()) {
 			protected void onPostExecute(JsonElement result) {
@@ -1289,6 +1338,7 @@ public class OnlineActivity extends CommonActivity {
 				put("sid", getSessionId());
 				put("op", "catchupFeed");
 				put("feed_id", String.valueOf(feed.id));
+				put("mode", mode);
 				if (feed.is_cat)
 					put("is_cat", "1");
 			}
