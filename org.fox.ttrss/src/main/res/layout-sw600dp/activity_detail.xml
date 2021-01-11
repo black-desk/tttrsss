@@ -41,7 +41,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:id="@+id/article_fragment"
-                app:layout_behavior=".util.DetailActivityScrollingViewBehavior"
+                app:layout_behavior="org.fox.ttrss.util.DetailActivityScrollingViewBehavior"
                 android:layout_height="match_parent"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
