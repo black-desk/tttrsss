@@ -1,3 +1,9 @@
+This is a fork of tttrsss. add some feature for myself
+
+change font of webview
+
+change color of night theme
+
 TTTRSS
 ======
 
