@@ -7,7 +7,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -27,6 +29,7 @@ import org.fox.ttrss.types.FeedCategory;
 import java.util.Date;
 import java.util.HashMap;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -49,6 +52,13 @@ public class MasterActivity extends OnlineActivity implements HeadlinesEventList
     private ActionBarDrawerToggle m_drawerToggle;
     private DrawerLayout m_drawerLayout;
 
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+		getWindow().setStatusBarColor(Color.TRANSPARENT);
+	}
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

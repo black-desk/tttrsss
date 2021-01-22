@@ -16,7 +16,7 @@
         <item name="headlineSelectedBackground">#1c1c1c</item>
         <item name="headlineHeaderBackground">#99000000</item>
         <item name="headlineUnreadBackground">#101010</item>
-        <item name="linkColor">#2d92c8</item>
+        <item name="linkColor">#788E9A</item>
         <item name="loadingBackground">@android:color/black</item>
         <item name="articleNoteTextColor">#bebebe</item>
         <item name="articleNoteBackground">#303030</item>
@@ -34,8 +34,8 @@
         <item name="headlineFooterColor">?colorPrimary</item>
         <item name="articleHeaderSeparator">#303030</item>
 
-        <item name="colorPrimary">#1e6286</item>
-        <item name="colorPrimaryDark">#18506e</item>
+        <item name="colorPrimary">#333537</item>
+        <item name="colorPrimaryDark">#090909</item>
         <item name="colorAccent">#D84315</item>
 
         <item name="ic_rss_box">@drawable/ic_rss_box</item>

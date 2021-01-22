@@ -419,10 +419,13 @@ public class ArticleFragment extends StateSavedFragment  {
                 "<head>" +
                 "<meta content=\"text/html; charset=utf-8\" http-equiv=\"content-type\">" +
                 "<meta name=\"viewport\" content=\"width=device-width, user-scalable=no\" />" +
+                "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\">\n" +
+                "<link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&family=Noto+Serif+SC:wght@200;300;400;500;600;700;900&display=swap\" rel=\"stylesheet\">"+
                 "<style type=\"text/css\">" +
-                "body { padding : 0px; margin : 0px; line-height : 130%; word-wrap: break-word; }" +
-                "img, video, iframe { max-width : 100%; width : auto; height : auto; }" +
-                " table { width : 100%; }" +
+                "body { padding : 0px; margin : 0px; line-height : 200%; word-wrap: break-word; font-family: 'Noto Serif SC', serif; }" +
+                "h1, h2, h3 { line-height : 120%; font-family: 'Noto Sans SC', sans-serif; }" +
+                "img, video, iframe { max-width : 100%; width : auto; height : auto; margin : 2em auto;}" +
+                "table { width : 100%; }" +
                 cssOverride +
                 "</style>" +
                 "</head>" +
